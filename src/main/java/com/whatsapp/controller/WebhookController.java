@@ -1,13 +1,11 @@
 package com.whatsapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import com.twilio.twiml.messaging.Message;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import com.twilio.twiml.MessagingResponse;
+import com.twilio.twiml.messaging.Message;
 import com.whatsapp.service.ChatService;
 
 @RestController
@@ -17,7 +15,9 @@ public class WebhookController {
     @Autowired
     private ChatService chatService;
 
-    @PostMapping
+    @PostMapping(
+        produces = MediaType.APPLICATION_XML_VALUE
+    )
     public String receiveMessage(
             @RequestParam("From") String phone,
             @RequestParam("Body") String message,
