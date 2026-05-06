@@ -16,17 +16,27 @@ public class WhatsAppService {
 
     public void sendMessage(String phone, String text) {
 
-        Twilio.init(accountSid, authToken);
+        try {
 
-        com.twilio.rest.api.v2010.account.Message message =
-            com.twilio.rest.api.v2010.account.Message.creator(
-                new com.twilio.type.PhoneNumber("whatsapp:+" + phone),
-                new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
-                text
-            ).create();
+            System.out.println("Sending to: " + phone);
 
-        System.out.println("Message SID: " + message.getSid());
-        System.out.println("Status: " + message.getStatus());
+            Twilio.init(accountSid, authToken);
+
+            com.twilio.rest.api.v2010.account.Message message =
+                com.twilio.rest.api.v2010.account.Message.creator(
+                    new com.twilio.type.PhoneNumber("whatsapp:+" + phone),
+                    new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
+                    text
+                ).create();
+
+            System.out.println("Message SID: " + message.getSid());
+            System.out.println("Status: " + message.getStatus());
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
     }
+    
 }
 
