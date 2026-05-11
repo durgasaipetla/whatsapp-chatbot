@@ -1,7 +1,5 @@
-package com.whatsapp.service;
 
-import java.util.HashMap;
-import java.util.Map;
+package com.whatsapp.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,10 +17,13 @@ public class WhatsAppService {
     private String authToken;
 
     @Value("${twilio.whatsapp.from}")
-    private String fromNumber; // approved production WhatsApp sender
+    private String fromNumber;
 
     @Value("${twilio.whatsapp.template.sid}")
-    private String welcomeTemplateSid; // approved content/template SID
+    private String welcomeTemplateSid;
+
+    @Value("${twilio.status.callback.url}")
+    private String statusCallbackUrl;
 
     private void initTwilio() {
         Twilio.init(accountSid, authToken);
@@ -31,8 +32,6 @@ public class WhatsAppService {
     public void sendInitialTemplate(String phone, String name) {
         initTwilio();
 
-        // Twilio expects JSON string for variables.
-        // The key numbers/letters must match the template placeholders.
         String contentVariables = String.format("{\"1\":\"%s\"}", name);
 
         Message.creator(
@@ -42,16 +41,21 @@ public class WhatsAppService {
         )
         .setContentSid(welcomeTemplateSid)
         .setContentVariables(contentVariables)
+        .setStatusCallback(statusCallbackUrl)
         .create();
     }
 
     public void sendFreeFormMessage(String phone, String text) {
+
         initTwilio();
 
         Message.creator(
                 new com.twilio.type.PhoneNumber("whatsapp:+" + phone),
                 new com.twilio.type.PhoneNumber(fromNumber),
                 text
-        ).create();
+        )
+        .setStatusCallback(statusCallbackUrl)
+        .create();
     }
+    
 }

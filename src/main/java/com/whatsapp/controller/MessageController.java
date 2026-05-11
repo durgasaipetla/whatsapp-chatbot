@@ -18,51 +18,54 @@ import com.whatsapp.service.WhatsAppService;
 @RequestMapping("/api")
 public class MessageController {
 
-    @Autowired
-    private ExcelService excelService;
+	@Autowired
+	private ExcelService excelService;
 
-    @Autowired
-    private WhatsAppService whatsappService;
+	@Autowired
+	private WhatsAppService whatsappService;
 
-    @Autowired
-    private SessionService sessionService;
+	@Autowired
+	private SessionService sessionService;
 
-    @Value("${excel.source}")
-    private String excelSource;
+	@Value("${excel.source}")
+	private String filePath;
 
-    @GetMapping("/send")
-    public String sendMessages() {
-        List<Contact> contacts = excelService.readExcel(excelSource);
+	@GetMapping("/send")
+	public String sendMessages() {
+		List<Contact> contacts = excelService.readExcel(filePath);
 
-        for (Contact c : contacts) {
-            if (!c.isConsent()) {
-                continue;
-            }
+		for (Contact c : contacts) {
+			if (!c.isConsent()) {
+				continue;
+			}
 
-            String phone = normalizePhone(c.getPhone());
-            if (phone == null) {
-                continue;
-            }
+			String phone = c.getPhone().replaceAll("\\D", "");
+			if (phone.length() < 10) {
+				continue;
+			}
+			if (!phone.startsWith("91")) {
+				phone = "91" + phone;
+			}
 
-            sessionService.setStep(phone, ChatStep.START);
+			sessionService.setStep(phone, ChatStep.START);
+			whatsappService.sendInitialTemplate(phone, c.getName());
+		}
 
-            // First outreach must be an approved template in production.
-            whatsappService.sendInitialTemplate(phone, c.getName());
-        }
+		return "Messages Sent Successfully!";
+	}
 
-        return "Messages Sent Successfully!";
-    }
+	private String normalizePhone(String phone) {
+		if (phone == null)
+			return null;
 
-    private String normalizePhone(String phone) {
-        if (phone == null) return null;
+		String cleaned = phone.replaceAll("\\D", "");
+		if (cleaned.isEmpty())
+			return null;
 
-        String cleaned = phone.replaceAll("\\D", "");
-        if (cleaned.isEmpty()) return null;
-
-        // India example; adjust if your candidate list includes other countries.
-        if (!cleaned.startsWith("91")) {
-            cleaned = "91" + cleaned;
-        }
-        return cleaned;
-    }
+		// India example; adjust if your candidate list includes other countries.
+		if (!cleaned.startsWith("91")) {
+			cleaned = "91" + cleaned;
+		}
+		return cleaned;
+	}
 }
