@@ -15,9 +15,7 @@ public class WebhookController {
     @Autowired
     private ChatService chatService;
 
-    @PostMapping(
-        produces = MediaType.APPLICATION_XML_VALUE
-    )
+    @PostMapping(produces = MediaType.APPLICATION_XML_VALUE)
     public String receiveMessage(
             @RequestParam("From") String phone,
             @RequestParam("Body") String message,
