@@ -14,17 +14,18 @@ import com.whatsapp.entity.Contact;
 @Service
 public class ExcelService {
 
-    public List<Contact> readExcel(String excelUrl) {
+    public List<Contact> readExcel(String filePath) {
 
         List<Contact> contacts = new ArrayList<>();
 
         try {
 
-            URL url = new URL(excelUrl);
+            URL url = new URL(filePath);
 
             InputStream file = url.openStream();
 
-            Workbook workbook = WorkbookFactory.create(file);
+            Workbook workbook =
+                    WorkbookFactory.create(file);
 
             Sheet sheet = workbook.getSheetAt(0);
 
@@ -33,15 +34,22 @@ public class ExcelService {
                 if (row.getRowNum() == 0)
                     continue;
 
-                String name = getCellValue(row.getCell(0));
-                String phone = getCellValue(row.getCell(1));
-                String consentText = getCellValue(row.getCell(2));
+                String name =
+                        getCellValue(row.getCell(0));
 
-                boolean consent = "yes".equalsIgnoreCase(consentText)
+                String phone =
+                        getCellValue(row.getCell(1));
+
+                String consentText =
+                        getCellValue(row.getCell(2));
+
+                boolean consent =
+                        "yes".equalsIgnoreCase(consentText)
                         || "true".equalsIgnoreCase(consentText)
                         || "1".equals(consentText);
 
-                contacts.add(new Contact(name, phone, consent));
+                contacts.add(
+                        new Contact(name, phone, consent));
             }
 
             workbook.close();
@@ -65,10 +73,12 @@ public class ExcelService {
                 return cell.getStringCellValue().trim();
 
             case NUMERIC:
-                return String.valueOf((long) cell.getNumericCellValue());
+                return String.valueOf(
+                        (long) cell.getNumericCellValue());
 
             case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
+                return String.valueOf(
+                        cell.getBooleanCellValue());
 
             default:
                 return "";
