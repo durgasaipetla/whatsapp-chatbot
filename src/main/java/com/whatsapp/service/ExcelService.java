@@ -40,16 +40,8 @@ public class ExcelService {
                 String phone =
                         getCellValue(row.getCell(1));
 
-                String consentText =
-                        getCellValue(row.getCell(2));
-
-                boolean consent =
-                        "yes".equalsIgnoreCase(consentText)
-                        || "true".equalsIgnoreCase(consentText)
-                        || "1".equals(consentText);
-
                 contacts.add(
-                        new Contact(name, phone, consent));
+                        new Contact(name, phone, true));
             }
 
             workbook.close();

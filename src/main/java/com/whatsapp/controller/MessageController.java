@@ -35,9 +35,7 @@ public class MessageController {
 		List<Contact> contacts = excelService.readExcel(filePath);
 
 		for (Contact c : contacts) {
-			if (!c.isConsent()) {
-				continue;
-			}
+			
 
 			String phone = c.getPhone().replaceAll("\\D", "");
 			if (phone.length() < 10) {
